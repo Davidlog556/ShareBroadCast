@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareBroadCast - Complete Network Edition</title>
+    
+    <!-- PeerJS for serverless multi-user live connections -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+
+    <style>
+        /* Retro Dark Theme Configuration */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .site-header {
+            text-align: center;
+            padding: 20px;
+            background-color: #262626;
+            border-bottom: 4px solid #ff0055;
+        }
+
+        .site-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            color: #ff0055;
+        }
+
+        .main-layout {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 30px auto;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        /* Left Content Area (Live Stream + Upload Controls + Video Grid) */
+        .content-left {
+            flex: 2;
+            min-width: 350px;
+        }
+
+        .theater-box {
+            background-color: #000;
+            border: 2px solid #ff0055;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .live-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #ff0055;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            display: none;
+            z-index: 10;
+        }
+
+        /* Control Panels */
+        .dashboard {
+            background: #222;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .dash-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .dash-section {
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .dash-section h3 {
+            margin-top: 0;
+            color: #00ffcc;
+            font-size: 1rem;
+        }
+
+        /* Video Grid for Uploaded Static Clips */
+        .gallery-heading {
+            color: #00ffcc;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background-color: #262626;
+            border: 2px solid #333;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .video-card video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+        }
+
+        .video-info {
+            padding: 10px;
+        }
+
+        .video-info h4 { margin: 0 0 5px 0; font-size: 1rem; color: #00ffcc; }
+        .video-info p { margin: 0; font-size: 0.8rem; color: #aaa; }
+
+        /* Right Side Chat Panel */
+        .chat-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #262626;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            background-color: #1f1f1f;
+            padding: 15px;
+            border-bottom: 2px solid #333;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            list-style: none;
+            margin: 0;
+        }
+
+        .chat-messages li {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .chat-messages .username { color: #ff0055; font-weight: bold; }
+
+        .chat-input-area {
+            padding: 15px;
+            background-color: #1f1f1f;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Interface Inputs & UI Buttons */
+        .input-field {
+            background-color: #121212;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #ff0055;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .btn:hover { background-color: #cc0044; }
+        .btn-live { background-color: #00ffcc; color: #1a1a1a; }
+        .btn-live:hover { background-color: #00cc99; }
+        .btn-stop { background-color: #ff3333; color: white; display: none; }
+        .btn-stop:hover { background-color: #cc0000; }
+        
+        #hidden-file-input { display: none; }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <h1>SHAREBROADCAST</h1>
+        <p>Live Streaming Theater & Static Video Upload Hub</p>
+    </header>
+
+    <div class="main-layout">
+        
+        <!-- Left Column: Video Components -->
+        <div class="content-left">
+            
+            <!-- Live Broadcast Window -->
+            <div class="theater-box">
+                <div class="live-tag" id="liveIndicator">LIVE BROADCAST</div>
+                <video id="mainTheaterVideo" controls autoplay playsinline></video>
+            </div>
+
+            <!-- Central Control Dashboard -->
+            <div class="dashboard">
+                <div class="dash-row">
+                    <!-- Live Control Room -->
+                    <div class="dash-section">
+                        <h3>1. Live Stream Controls</h3>
+                        <p style="margin:0 0 10px 0; font-size:0.8rem; color:#aaa;">Your Key: <strong id="my-id-display" style="color:#00ffcc;">Connecting...</strong></p>
+                        <button class="btn btn-live" id="startLiveBtn">Go Live</button>
+                        <button class="btn btn-stop" id="stopLiveBtn">End Live Stream</button>
+                    </div>
+
+                    <!-- Viewer Tuning Room -->
+                    <div class="dash-section">
+                        <h3>2. Tune Into an Online Stream</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="targetIdInput" class="input-field" style="flex-grow:1;" placeholder="Paste Streamer Key">
+                            <button class="btn" id="connectBtn">Connect</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-row" style="border-top: 1px solid #333; padding-top: 15px; margin-bottom: 0;">
+                    <!-- Static Video Upload Engine -->
+                    <div class="dash-section">
+                        <h3>3. Upload Static Videos to Gallery</h3>
+                        <label for="hidden-file-input" class="btn" style="background-color: #333; border: 1px solid #00ffcc; color: #00ffcc;">Choose Video File</label>
+                        <input type="file" id="hidden-file-input" accept="video/*">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Uploaded Video Display Gallery -->
+            <h2 class="gallery-heading">Uploaded Video Feed</h2>
+            <main class="video-grid" id="galleryGrid">
+                <!-- Uploaded clips appear dynamically here -->
+            </main>
+        </div>
+
+        <!-- Right Column: Interactive Chat Panel -->
+        <div class="chat-panel">
+            <div class="chat-header">ShareBroadCast Global Network Chat</div>
+            <ul class="chat-messages" id="chatContainer"></ul>
+            
+            <div class="chat-input-area">
+                <input type="text" id="usernameInput" class="input-field" style="width:60px;" value="User" placeholder="Name">
+                <input type="text" id="messageInput" class="input-field" style="flex-grow:1;" placeholder="Type a message...">
+                <button class="btn" id="sendChatBtn">Send</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Element Elements mapping
+        const chatContainer = document.getElementById('chatContainer');
+        const usernameInput = document.getElementById('usernameInput');
+        const messageInput = document.getElementById('messageInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const startLiveBtn = document.getElementById('startLiveBtn');
+        const stopLiveBtn = document.getElementById('stopLiveBtn');
+        const connectBtn = document.getElementById('connectBtn');
+        const targetIdInput = document.getElementById('targetIdInput');
+        const myIdDisplay = document.getElementById('my-id-display');
+        const mainTheaterVideo = document.getElementById('mainTheaterVideo');
+        const liveIndicator = document.getElementById('liveIndicator');
+        const hiddenFileInput = document.getElementById('hidden-file-input');
+        const galleryGrid = document.getElementById('galleryGrid');
+
+        let peer = new Peer(); 
+        let activeDataConnection = null;
+        let cameraStreamInstance = null;
+
+        // Register serverless room profile identity
+        peer.on('open', (id) => {
+            myIdDisplay.textContent = id;
+            appendSystemNotice("Connected to the serverless communication relay.");
+        });
+
+        // --- 1. Static File Upload Architecture ---
+        hiddenFileInput.addEventListener('change', function(e) {
+            const uploadedFile = e.target.files[0];
+            if (uploadedFile) {
+                const localBlobURL = URL.createObjectURL(uploadedFile);
+                const fileTitle = uploadedFile.name.substring(0, uploadedFile.name.lastIndexOf('.')) || uploadedFile.name;
+
+                // Construct a completely distinct static file display card
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.innerHTML = `
+                    <video controls>
+                        <source src="${localBlobURL}" type="${uploadedFile.type}">
+                    </video>
+                    <div class="video-info">
+                        <h4>${fileTitle}</h4>
+                        <p>Uploaded Video File • Just Now</p>
+                    </div>
+                `;
+                // Add the clip to the gallery grid, preserving the live panel state
+                galleryGrid.insertBefore(videoCard, galleryGrid.firstChild);
+                appendSystemNotice(`Successfully posted video: "${fileTitle}" to your local session feed.`);
+            }
+        });
+
+        // --- 2. Live Stream Management (Start & End Functions) ---
+        startLiveBtn.addEventListener('click', async () => {
+            try {
+                cameraStreamInstance = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                mainTheaterVideo.srcObject = cameraStreamInstance;
+                mainTheaterVideo.muted = true; // Block local audio loop echoes
+                
+                liveIndicator.style.display = "block";
+                startLiveBtn.style.display = "none";
+                stopLiveBtn.style.display = "inline-block";
+                appendSystemNotice("Your live broadcast room is open!");
+            } catch (err) {
+                alert("Could not access camera devices.");
+            }
+        });
+
+        // THE FIX: Explicitly terminate the stream paths
+        stopLiveBtn.addEventListener('click', () => {
+            if (cameraStreamInstance) {
+                // Shut down every hardware track (lens capture, mic capture)
+                cameraStreamInstance.getTracks().forEach(track => track.stop());
+                cameraStreamInstance = null;
+            }
+            mainTheaterVideo.srcObject = null;
+            liveIndicator.style.display = "none";
+            stopLiveBtn.style.display = "none";
+            startLiveBtn.style.display = "inline-block";
+            appendSystemNotice("You have ended your live stream broadcast safely.");
+        });
+
+        // --- 3. Communication Room Networking Logic ---
+        sendChatBtn.addEventListener('click', dispatchMessage);
+        messageInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') dispatchMessage(); });
+
+        function dispatchMessage() {
+            const alias = usernameInput.value.trim() || "User";
+            const textContent = messageInput.value.trim();
+
+            if (textContent !== "") {
+                const payload = { type: "chat", author: alias, message: textContent };
+                if (activeDataConnection && activeDataConnection.open) {
+                    activeDataConnection.send(payload);
+                }
+                renderMessage(alias, textContent);
+                messageInput.value = "";
+            }
+        }
+
+        function renderMessage(user, msg) {
+            const messageElement = document.createElement('li');
+            messageElement.innerHTML = `<span class="username">${user}:</span> ${msg}`;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function appendSystemNotice(msg) {
+            const noticeElement = document.createElement('li');
+            noticeElement.innerHTML = `<span style="color:#00ffcc;">[System]:</span> ${msg}`;
+            chatContainer.appendChild(noticeElement);
+        }
+
+        peer.on('connection', (conn) => {
+            activeDataConnection = conn;
+            bindNetworkChannels(conn);
+            appendSystemNotice("A network visitor connected to your chat node.");
+        });
+
+        function bindNetworkChannels(conn) {
+            conn.on('data', (payload) => {
+                if (payload.type === "chat") {
+                    renderMessage(payload.author, payload.message);
+                }
+            });
+        }
+
+        connectBtn.addEventListener('click', () => {
+            const channelKey = targetIdInput.value.trim();
+            if (channelKey) {
+                activeDataConnection = peer.connect(channelKey);
+                bindNetworkChannels(activeDataConnection);
+                appendSystemNotice(`Connecting to host node: ${channelKey}`);
+                
+                // Set up automated connection receiving channel hook for stream streaming
+                navigator.mediaDevices.getUserMedia({video: false, audio: false}).then((dummyStream) => {
+                    const callPipeline = peer.call(channelKey, dummyStream);
+                    callPipeline.on('stream', (incomingLiveFeed) => {
+                        mainTheaterVideo.srcObject = incomingLiveFeed;
+                        liveIndicator.style.display = "block";
+                    });
+                });
+            }
+        });
+
+        peer.on('call', (incomingCall) => {
+            if(cameraStreamInstance) {
+                incomingCall.answer(cameraStreamInstance);
+            } else {
+                incomingCall.answer();
+            }
+            incomingCall.on('stream', (incomingLiveFeed) => {
+                mainTheaterVideo.srcObject = incomingLiveFeed;
+                liveIndicator.style.display = "block";
+            });
+        });
+    </script>
+</body>
+</html>
