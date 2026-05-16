@@ -3,438 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareBroadCast - Complete Network Edition</title>
+    <title>ShareBroadCast - Mobile Optimized Network</title>
     
-    <!-- PeerJS for serverless multi-user live connections -->
+    <!-- PeerJS Library for global cloud serverless streaming connection channels -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
 
     <style>
-        /* Retro Dark Theme Configuration */
+        /* Modernized Mobile-First UI Foundation */
+        :root {
+            --bg-primary: #121212;
+            --bg-card: #1e1e1e;
+            --accent-neon: #00ffcc;
+            --accent-pink: #ff0055;
+            --text-main: #ffffff;
+            --text-muted: #b3b3b3;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .site-header {
             text-align: center;
-            padding: 20px;
-            background-color: #262626;
-            border-bottom: 4px solid #ff0055;
+            padding: 15px;
+            background-color: #000000;
+            border-bottom: 2px solid var(--accent-pink);
         }
 
         .site-header h1 {
             margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            color: #ff0055;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            color: var(--accent-pink);
         }
 
-        .main-layout {
-            display: flex;
-            flex-wrap: wrap;
-            max-width: 1400px;
-            margin: 30px auto;
-            gap: 20px;
-            padding: 0 20px;
+        /* Fluid Main Responsive Container Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
         }
 
-        /* Left Content Area (Live Stream + Upload Controls + Video Grid) */
-        .content-left {
-            flex: 2;
-            min-width: 350px;
-        }
-
-        .theater-box {
-            background-color: #000;
-            border: 2px solid #ff0055;
-            border-radius: 8px;
+        /* Media Player Window Component */
+        .player-viewport {
+            background-color: #000000;
+            border: 2px solid var(--accent-pink);
+            border-radius: 12px;
             overflow: hidden;
             aspect-ratio: 16/9;
             position: relative;
-            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         video {
             width: 100%;
             height: 100%;
+            object-fit: contain;
             display: block;
         }
 
-        .live-tag {
+        .status-badge {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            background-color: #ff0055;
-            padding: 5px 10px;
+            top: 10px;
+            left: 10px;
+            background-color: var(--accent-pink);
+            padding: 4px 8px;
+            font-size: 0.75rem;
             font-weight: bold;
-            font-size: 0.8rem;
             border-radius: 4px;
             display: none;
-            z-index: 10;
+            text-transform: uppercase;
         }
 
-        /* Control Panels */
-        .dashboard {
-            background: #222;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            margin-bottom: 30px;
+        /* Channel Selector & Dashboard Panel */
+        .control-dashboard {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #2a2a2a;
         }
 
-        .dash-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-
-        .dash-section {
-            flex: 1;
-            min-width: 240px;
-        }
-
-        .dash-section h3 {
+        .section-title {
             margin-top: 0;
-            color: #00ffcc;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            color: var(--accent-neon);
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
         }
 
-        /* Video Grid for Uploaded Static Clips */
-        .gallery-heading {
-            color: #00ffcc;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-top: 40px;
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .video-card {
-            background-color: #262626;
-            border: 2px solid #333;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .video-card video {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
-        }
-
-        .video-info {
-            padding: 10px;
-        }
-
-        .video-info h4 { margin: 0 0 5px 0; font-size: 1rem; color: #00ffcc; }
-        .video-info p { margin: 0; font-size: 0.8rem; color: #aaa; }
-
-        /* Right Side Chat Panel */
-        .chat-panel {
-            flex: 1;
-            min-width: 300px;
-            background-color: #262626;
-            border: 2px solid #333;
+        /* Large Touch Target Buttons for Mobile Users */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--accent-pink);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
             border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active { opacity: 0.8; }
+        .btn-stream { background-color: var(--accent-neon); color: #000; }
+        .btn-stop { background-color: #ff3333; display: none; }
+
+        .input-box {
+            width: 100%;
+            background-color: #121212;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        /* Live Content Feed Listing Directory */
+        .feed-directory {
+            margin-top: 15px;
+        }
+
+        .feed-item {
+            background-color: #262626;
+            border-left: 4px solid var(--accent-neon);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .feed-item:active { background-color: #333; }
+        .feed-item h4 { margin: 0 0 4px 0; font-size: 0.95rem; }
+        .feed-item p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Traditional Interactive Live Comments Element */
+        .chat-container {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
             display: flex;
             flex-direction: column;
-            height: 600px;
+            height: 300px;
         }
 
-        .chat-header {
-            background-color: #1f1f1f;
-            padding: 15px;
-            border-bottom: 2px solid #333;
-            font-weight: bold;
-            color: #00ffcc;
-        }
-
-        .chat-messages {
+        .chat-scroller {
             flex-grow: 1;
-            padding: 15px;
+            padding: 12px;
             overflow-y: auto;
             list-style: none;
             margin: 0;
         }
 
-        .chat-messages li {
-            margin-bottom: 10px;
-            border-bottom: 1px solid #2a2a2a;
-            padding-bottom: 5px;
+        .chat-scroller li {
             font-size: 0.9rem;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            border-bottom: 1px solid #262626;
+            padding-bottom: 4px;
         }
 
-        .chat-messages .username { color: #ff0055; font-weight: bold; }
-
-        .chat-input-area {
-            padding: 15px;
-            background-color: #1f1f1f;
-            display: flex;
-            gap: 10px;
-        }
-
-        /* Interface Inputs & UI Buttons */
-        .input-field {
-            background-color: #121212;
-            border: 1px solid #444;
-            color: white;
-            padding: 8px;
-            font-family: 'Courier New', Courier, monospace;
-            border-radius: 4px;
-        }
-
-        .btn {
-            background-color: #ff0055;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            font-family: 'Courier New', Courier, monospace;
+        .chat-scroller .user-tag {
+            color: var(--accent-pink);
             font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
         }
 
-        .btn:hover { background-color: #cc0044; }
-        .btn-live { background-color: #00ffcc; color: #1a1a1a; }
-        .btn-live:hover { background-color: #00cc99; }
-        .btn-stop { background-color: #ff3333; color: white; display: none; }
-        .btn-stop:hover { background-color: #cc0000; }
-        
-        #hidden-file-input { display: none; }
+        .chat-bar {
+            padding: 10px;
+            background-color: #1a1a1a;
+            display: flex;
+            gap: 8px;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Desktop Layout Adaptations using Media Queries */
+        @media (min-width: 768px) {
+            .app-container {
+                grid-template-columns: 2fr 1fr;
+            }
+            .site-header h1 { font-size: 2.3rem; }
+            .btn { width: auto; }
+        }
     </style>
 </head>
 <body>
 
     <header class="site-header">
         <h1>SHAREBROADCAST</h1>
-        <p>Live Streaming Theater & Static Video Upload Hub</p>
     </header>
 
-    <div class="main-layout">
+    <div class="app-container">
         
-        <!-- Left Column: Video Components -->
-        <div class="content-left">
-            
-            <!-- Live Broadcast Window -->
-            <div class="theater-box">
-                <div class="live-tag" id="liveIndicator">LIVE BROADCAST</div>
-                <video id="mainTheaterVideo" controls autoplay playsinline></video>
+        <!-- Main Media Feed Content Area -->
+        <main>
+            <!-- Flexible Player Section -->
+            <div class="player-viewport">
+                <div class="status-badge" id="liveBadge">Live Stream</div>
+                <video id="broadcastPlayer" controls autoplay playsinline></video>
             </div>
 
-            <!-- Central Control Dashboard -->
-            <div class="dashboard">
-                <div class="dash-row">
-                    <!-- Live Control Room -->
-                    <div class="dash-section">
-                        <h3>1. Live Stream Controls</h3>
-                        <p style="margin:0 0 10px 0; font-size:0.8rem; color:#aaa;">Your Key: <strong id="my-id-display" style="color:#00ffcc;">Connecting...</strong></p>
-                        <button class="btn btn-live" id="startLiveBtn">Go Live</button>
-                        <button class="btn btn-stop" id="stopLiveBtn">End Live Stream</button>
-                    </div>
+            <!-- Directory / Controller Operations Section -->
+            <div class="control-dashboard" style="margin-top:15px;">
+                <h3 class="section-title">Broadcast Controller</h3>
+                
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0;">
+                    Your Network Device Key: <strong id="networkKeyDisplay" style="color:var(--accent-neon);">Connecting...</strong>
+                </p>
 
-                    <!-- Viewer Tuning Room -->
-                    <div class="dash-section">
-                        <h3>2. Tune Into an Online Stream</h3>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="targetIdInput" class="input-field" style="flex-grow:1;" placeholder="Paste Streamer Key">
-                            <button class="btn" id="connectBtn">Connect</button>
-                        </div>
-                    </div>
+                <button class="btn btn-stream" id="initiateStreamBtn">Start Live Feed</button>
+                <button class="btn btn-stop" id="terminateStreamBtn">End Live Feed</button>
+
+                <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                    <input type="text" id="streamKeyTarget" class="input-box" placeholder="Paste target streaming key here">
+                    <button class="btn" id="tuneInBtn" style="background-color: #333; border: 1px solid var(--accent-pink);">Tune In to Key</button>
                 </div>
 
-                <div class="dash-row" style="border-top: 1px solid #333; padding-top: 15px; margin-bottom: 0;">
-                    <!-- Static Video Upload Engine -->
-                    <div class="dash-section">
-                        <h3>3. Upload Static Videos to Gallery</h3>
-                        <label for="hidden-file-input" class="btn" style="background-color: #333; border: 1px solid #00ffcc; color: #00ffcc;">Choose Video File</label>
-                        <input type="file" id="hidden-file-input" accept="video/*">
+                <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px;">
+                    <label class="btn" style="background-color: #222; border: 1px solid var(--accent-neon); color: var(--accent-neon);">
+                        Upload Static Video File
+                        <input type="file" id="staticUpload" accept="video/*" style="display:none;">
+                    </label>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar Panel: Controls & Feeds -->
+        <aside>
+            <!-- Platform Content Feed Directory -->
+            <div class="control-dashboard" style="margin-bottom: 15px;">
+                <h3 class="section-title">Available Channels</h3>
+                <div class="feed-directory" id="directoryList">
+                    <div class="feed-item" onclick="loadDefaultPlaceholder()">
+                        <h4>Welcome Tutorial Setup</h4>
+                        <p>Static System Video Asset</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Uploaded Video Display Gallery -->
-            <h2 class="gallery-heading">Uploaded Video Feed</h2>
-            <main class="video-grid" id="galleryGrid">
-                <!-- Uploaded clips appear dynamically here -->
-            </main>
-        </div>
-
-        <!-- Right Column: Interactive Chat Panel -->
-        <div class="chat-panel">
-            <div class="chat-header">ShareBroadCast Global Network Chat</div>
-            <ul class="chat-messages" id="chatContainer"></ul>
-            
-            <div class="chat-input-area">
-                <input type="text" id="usernameInput" class="input-field" style="width:60px;" value="User" placeholder="Name">
-                <input type="text" id="messageInput" class="input-field" style="flex-grow:1;" placeholder="Type a message...">
-                <button class="btn" id="sendChatBtn">Send</button>
+            <!-- Stream Dialogue Board -->
+            <div class="chat-container">
+                <div style="padding:10px; font-weight:bold; font-size:0.85rem; border-bottom:1px solid #333; color:var(--accent-neon);">Live Content Chat</div>
+                <ul class="chat-scroller" id="messageLog"></ul>
+                <div class="chat-bar">
+                    <input type="text" id="chatMsgInput" class="input-box" style="margin:0;" placeholder="Send comment...">
+                    <button class="btn" id="broadcastMsgBtn" style="margin:0; padding:0 15px;">Send</button>
+                </div>
             </div>
-        </div>
+        </aside>
 
     </div>
 
     <script>
-        // DOM Element Elements mapping
-        const chatContainer = document.getElementById('chatContainer');
-        const usernameInput = document.getElementById('usernameInput');
-        const messageInput = document.getElementById('messageInput');
-        const sendChatBtn = document.getElementById('sendChatBtn');
-        const startLiveBtn = document.getElementById('startLiveBtn');
-        const stopLiveBtn = document.getElementById('stopLiveBtn');
-        const connectBtn = document.getElementById('connectBtn');
-        const targetIdInput = document.getElementById('targetIdInput');
-        const myIdDisplay = document.getElementById('my-id-display');
-        const mainTheaterVideo = document.getElementById('mainTheaterVideo');
-        const liveIndicator = document.getElementById('liveIndicator');
-        const hiddenFileInput = document.getElementById('hidden-file-input');
-        const galleryGrid = document.getElementById('galleryGrid');
+        const broadcastPlayer = document.getElementById('broadcastPlayer');
+        const liveBadge = document.getElementById('liveBadge');
+        const networkKeyDisplay = document.getElementById('networkKeyDisplay');
+        const initiateStreamBtn = document.getElementById('initiateStreamBtn');
+        const terminateStreamBtn = document.getElementById('terminateStreamBtn');
+        const streamKeyTarget = document.getElementById('streamKeyTarget');
+        const tuneInBtn = document.getElementById('tuneInBtn');
+        const staticUpload = document.getElementById('staticUpload');
+        const directoryList = document.getElementById('directoryList');
+        const messageLog = document.getElementById('messageLog');
+        const chatMsgInput = document.getElementById('chatMsgInput');
+        const broadcastMsgBtn = document.getElementById('broadcastMsgBtn');
 
-        let peer = new Peer(); 
-        let activeDataConnection = null;
-        let cameraStreamInstance = null;
+        let peerNode = new Peer();
+        let hardwareStreamReference = null;
+        let dataLinkChannel = null;
 
-        // Register serverless room profile identity
-        peer.on('open', (id) => {
-            myIdDisplay.textContent = id;
-            appendSystemNotice("Connected to the serverless communication relay.");
+        peerNode.on('open', (id) => {
+            networkKeyDisplay.textContent = id;
+            pushSystemAlert("Device securely locked onto serverless cloud.");
         });
 
-        // --- 1. Static File Upload Architecture ---
-        hiddenFileInput.addEventListener('change', function(e) {
-            const uploadedFile = e.target.files[0];
-            if (uploadedFile) {
-                const localBlobURL = URL.createObjectURL(uploadedFile);
-                const fileTitle = uploadedFile.name.substring(0, uploadedFile.name.lastIndexOf('.')) || uploadedFile.name;
+        // --- Stream Navigation Logic ---
+        function loadDefaultPlaceholder() {
+            broadcastPlayer.srcObject = null;
+            broadcastPlayer.src = "movie.mp4"; // Targets relative file pathway
+            liveBadge.style.display = "none";
+            pushSystemAlert("Loading system introductory playback track.");
+        }
 
-                // Construct a completely distinct static file display card
-                const videoCard = document.createElement('div');
-                videoCard.className = 'video-card';
-                videoCard.innerHTML = `
-                    <video controls>
-                        <source src="${localBlobURL}" type="${uploadedFile.type}">
-                    </video>
-                    <div class="video-info">
-                        <h4>${fileTitle}</h4>
-                        <p>Uploaded Video File • Just Now</p>
-                    </div>
+        // Processing custom local static user video uploads
+        staticUpload.addEventListener('change', (e) => {
+            const chosenFile = e.target.files[0];
+            if (chosenFile) {
+                const objectLocation = URL.createObjectURL(chosenFile);
+                
+                // Switch video content cleanly
+                broadcastPlayer.srcObject = null;
+                broadcastPlayer.src = objectLocation;
+                liveBadge.style.display = "none";
+
+                // Append newly discovered dynamic items into choice listings
+                const catalogCard = document.createElement('div');
+                catalogCard.className = 'feed-item';
+                catalogCard.style.borderColor = 'var(--accent-pink)';
+                catalogCard.innerHTML = `
+                    <h4>${chosenFile.name.split('.')[0]}</h4>
+                    <p>Uploaded Local Asset File</p>
                 `;
-                // Add the clip to the gallery grid, preserving the live panel state
-                galleryGrid.insertBefore(videoCard, galleryGrid.firstChild);
-                appendSystemNotice(`Successfully posted video: "${fileTitle}" to your local session feed.`);
+                catalogCard.addEventListener('click', () => {
+                    broadcastPlayer.srcObject = null;
+                    broadcastPlayer.src = objectLocation;
+                    liveBadge.style.display = "none";
+                });
+                
+                directoryList.insertBefore(catalogCard, directoryList.firstChild);
+                pushSystemAlert("Static file mapped into catalog channel selection.");
             }
         });
 
-        // --- 2. Live Stream Management (Start & End Functions) ---
-        startLiveBtn.addEventListener('click', async () => {
+        // --- Hardware Activation Controls ---
+        initiateStreamBtn.addEventListener('click', async () => {
             try {
-                cameraStreamInstance = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                mainTheaterVideo.srcObject = cameraStreamInstance;
-                mainTheaterVideo.muted = true; // Block local audio loop echoes
+                // Media parameters customized to bypass mobile browser processing stalls
+                hardwareStreamReference = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 1280, height: 720, facingMode: "user" },
+                    audio: true
+                });
+                broadcastPlayer.src = null;
+                broadcastPlayer.srcObject = hardwareStreamReference;
+                broadcastPlayer.muted = true; // Essential flag to bypass mobile playback block policies
                 
-                liveIndicator.style.display = "block";
-                startLiveBtn.style.display = "none";
-                stopLiveBtn.style.display = "inline-block";
-                appendSystemNotice("Your live broadcast room is open!");
+                liveBadge.style.display = "block";
+                initiateStreamBtn.style.display = "none";
+                terminateStreamBtn.style.display = "inline-flex";
+                pushSystemAlert("Your mobile camera is streaming live.");
             } catch (err) {
-                alert("Could not access camera devices.");
+                alert("Please check your camera permission configurations.");
             }
         });
 
-        // THE FIX: Explicitly terminate the stream paths
-        stopLiveBtn.addEventListener('click', () => {
-            if (cameraStreamInstance) {
-                // Shut down every hardware track (lens capture, mic capture)
-                cameraStreamInstance.getTracks().forEach(track => track.stop());
-                cameraStreamInstance = null;
+        terminateStreamBtn.addEventListener('click', () => {
+            if (hardwareStreamReference) {
+                hardwareStreamReference.getTracks().forEach(track => track.stop());
+                hardwareStreamReference = null;
             }
-            mainTheaterVideo.srcObject = null;
-            liveIndicator.style.display = "none";
-            stopLiveBtn.style.display = "none";
-            startLiveBtn.style.display = "inline-block";
-            appendSystemNotice("You have ended your live stream broadcast safely.");
+            broadcastPlayer.srcObject = null;
+            liveBadge.style.display = "none";
+            terminateStreamBtn.style.display = "none";
+            initiateStreamBtn.style.display = "inline-flex";
+            pushSystemAlert("Stream feed killed. Hardware lenses offline.");
         });
 
-        // --- 3. Communication Room Networking Logic ---
-        sendChatBtn.addEventListener('click', dispatchMessage);
-        messageInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') dispatchMessage(); });
+        // --- Data Relay Operations ---
+        broadcastMsgBtn.addEventListener('click', postComment);
+        chatMsgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') postComment(); });
 
-        function dispatchMessage() {
-            const alias = usernameInput.value.trim() || "User";
-            const textContent = messageInput.value.trim();
-
-            if (textContent !== "") {
-                const payload = { type: "chat", author: alias, message: textContent };
-                if (activeDataConnection && activeDataConnection.open) {
-                    activeDataConnection.send(payload);
+        function postComment() {
+            const query = chatMsgInput.value.trim();
+            if (query !== "") {
+                if (dataLinkChannel && dataLinkChannel.open) {
+                    dataLinkChannel.send({ type: "text", content: query });
                 }
-                renderMessage(alias, textContent);
-                messageInput.value = "";
+                appendLineItem("Me", query);
+                chatMsgInput.value = "";
             }
         }
 
-        function renderMessage(user, msg) {
-            const messageElement = document.createElement('li');
-            messageElement.innerHTML = `<span class="username">${user}:</span> ${msg}`;
-            chatContainer.appendChild(messageElement);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        function appendLineItem(author, text) {
+            const node = document.createElement('li');
+            node.innerHTML = `<span class="user-tag">${author}:</span> ${text}`;
+            messageLog.appendChild(node);
+            messageLog.scrollTop = messageLog.scrollHeight;
         }
 
-        function appendSystemNotice(msg) {
-            const noticeElement = document.createElement('li');
-            noticeElement.innerHTML = `<span style="color:#00ffcc;">[System]:</span> ${msg}`;
-            chatContainer.appendChild(noticeElement);
+        function pushSystemAlert(notice) {
+            const node = document.createElement('li');
+            node.innerHTML = `<span style="color:var(--accent-neon);">[System]:</span> ${notice}`;
+            messageLog.appendChild(node);
         }
 
-        peer.on('connection', (conn) => {
-            activeDataConnection = conn;
-            bindNetworkChannels(conn);
-            appendSystemNotice("A network visitor connected to your chat node.");
-        });
-
-        function bindNetworkChannels(conn) {
-            conn.on('data', (payload) => {
-                if (payload.type === "chat") {
-                    renderMessage(payload.author, payload.message);
-                }
+        peerNode.on('connection', (connectionInstance) => {
+            dataLinkChannel = connectionInstance;
+            dataLinkChannel.on('data', (payload) => {
+                if (payload.type === "text") appendLineItem("Peer", payload.content);
             });
-        }
+        });
 
-        connectBtn.addEventListener('click', () => {
-            const channelKey = targetIdInput.value.trim();
-            if (channelKey) {
-                activeDataConnection = peer.connect(channelKey);
-                bindNetworkChannels(activeDataConnection);
-                appendSystemNotice(`Connecting to host node: ${channelKey}`);
-                
-                // Set up automated connection receiving channel hook for stream streaming
-                navigator.mediaDevices.getUserMedia({video: false, audio: false}).then((dummyStream) => {
-                    const callPipeline = peer.call(channelKey, dummyStream);
-                    callPipeline.on('stream', (incomingLiveFeed) => {
-                        mainTheaterVideo.srcObject = incomingLiveFeed;
-                        liveIndicator.style.display = "block";
+        tuneInBtn.addEventListener('click', () => {
+            const routingId = streamKeyTarget.value.trim();
+            if (routingId) {
+                dataLinkChannel = peerNode.connect(routingId);
+                dataLinkChannel.on('data', (payload) => {
+                    if (payload.type === "text") appendLineItem("Peer", payload.content);
+                });
+
+                navigator.mediaDevices.getUserMedia({ video: false, audio: false }).then((blankStream) => {
+                    const trackingCall = peerNode.call(routingId, blankStream);
+                    trackingCall.on('stream', (incomingFeed) => {
+                        broadcastPlayer.src = null;
+                        broadcastPlayer.srcObject = incomingFeed;
+                        liveBadge.style.display = "block";
                     });
                 });
+                pushSystemAlert(`Requesting network attachment path: ${routingId}`);
             }
         });
 
-        peer.on('call', (incomingCall) => {
-            if(cameraStreamInstance) {
-                incomingCall.answer(cameraStreamInstance);
-            } else {
-                incomingCall.answer();
-            }
-            incomingCall.on('stream', (incomingLiveFeed) => {
-                mainTheaterVideo.srcObject = incomingLiveFeed;
-                liveIndicator.style.display = "block";
+        peerNode.on('call', (incomingCall) => {
+            incomingCall.answer(hardwareStreamReference || null);
+            incomingCall.on('stream', (incomingFeed) => {
+                broadcastPlayer.src = null;
+                broadcastPlayer.srcObject = incomingFeed;
+                liveBadge.style.display = "block";
             });
         });
     </script>
