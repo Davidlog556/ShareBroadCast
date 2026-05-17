@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareBroadCast - Instant Access Edition</title>
+    <title>ShareBroadCast - Custom Player Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
 
@@ -105,18 +105,21 @@
             padding: 15px;
         }
 
+        /* CUSTOM VIDEO PLAYER CONTAINER */
         .player-box {
             background-color: #000000;
             border: 2px solid var(--accent-pink);
             border-radius: 12px;
             overflow: hidden;
-            aspect-ratio: 16/9;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Removed native controls, video takes up screen space */
         video {
             width: 100%;
-            height: 100%;
+            aspect-ratio: 16/9;
             object-fit: contain;
             display: block;
         }
@@ -131,8 +134,61 @@
             font-weight: bold;
             border-radius: 4px;
             display: none;
+            z-index: 5;
         }
 
+        /* CUSTOM MEDIA PLAYER CONTROLS BAR */
+        .custom-controls {
+            background-color: #0a0a0a;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            gap: 15px;
+            border-top: 1px solid #222;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .control-btn:hover {
+            color: var(--accent-neon);
+        }
+
+        /* Custom Seek Progress Slider styling */
+        .seek-slider {
+            flex-grow: 1;
+            accent-color: var(--accent-pink);
+            cursor: pointer;
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .time-display {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-family: monospace;
+            min-width: 90px;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 70px;
+            accent-color: var(--accent-neon);
+            cursor: pointer;
+        }
+
+        /* Dashboard styles */
         .dashboard {
             background-color: var(--bg-card);
             border-radius: 12px;
@@ -165,7 +221,6 @@
             width: 100%;
             box-sizing: border-box;
             margin-bottom: 10px;
-            text-decoration: none;
         }
 
         .btn-stream { background-color: var(--accent-neon); color: #000; }
@@ -223,7 +278,6 @@
         <div class="auth-card">
             <h2 style="color: var(--accent-pink); margin-top: 0;">SHAREBROADCAST</h2>
             <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Connect your account profile to access active channels and saved media files.</p>
-            
             <input type="text" id="authUsernameInput" class="input-box" placeholder="Enter Channel Username..." style="text-align: center;">
             <button class="btn" id="secureGatewayBtn" style="width: 100%;">Instant Secure Connect</button>
         </div>
@@ -242,7 +296,21 @@
             <main>
                 <div class="player-box">
                     <div class="live-tag" id="liveIndicatorTag">Live Stream</div>
-                    <video id="broadcastPlayer" controls autoplay playsinline></video>
+                    
+                    <video id="broadcastPlayer" autoplay playsinline></video>
+                    
+                    <div class="custom-controls" id="customControlsBar">
+                        <button class="control-btn" id="playPauseBtn">▶</button>
+                        
+                        <input type="range" id="seekSlider" class="seek-slider" min="0" max="100" value="0">
+                        
+                        <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
+                        
+                        <div class="volume-container">
+                            <button class="control-btn" id="muteBtn" style="font-size: 0.95rem;">🔊</button>
+                            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.1" value="1">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="dashboard">
@@ -302,11 +370,86 @@
         const uploadTitleInput = document.getElementById('uploadTitleInput');
         const uploadDescInput = document.getElementById('uploadDescInput');
 
+        // Custom player control bindings
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const seekSlider = document.getElementById('seekSlider');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const customControlsBar = document.getElementById('customControlsBar');
+
         let peerNode = null;
         let hardwareStreamReference = null;
         let platformFeed = [];
 
-        // Automated Device Sensing Architecture
+        // --- Core Optimization: Custom Media Player JavaScript Controllers ---
+        
+        // 1. Play / Pause Toggle Control
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        broadcastPlayer.addEventListener('click', togglePlayPause); // Click video screen directly to pause
+
+        function togglePlayPause() {
+            if (broadcastPlayer.paused || broadcastPlayer.ended) {
+                broadcastPlayer.play();
+                playPauseBtn.textContent = "⏸";
+            } else {
+                broadcastPlayer.pause();
+                playPauseBtn.textContent = "▶";
+            }
+        }
+
+        // 2. Track Video Time Progress Changes
+        broadcastPlayer.addEventListener('timeupdate', () => {
+            if (!isNaN(broadcastPlayer.duration)) {
+                // Update seek slider value position percentage
+                const progressPercentage = (broadcastPlayer.currentTime / broadcastPlayer.duration) * 100;
+                seekSlider.value = progressPercentage;
+
+                // Format timestamp strings dynamically
+                timeDisplay.textContent = `${formatTimestamp(broadcastPlayer.currentTime)} / ${formatTimestamp(broadcastPlayer.duration)}`;
+            }
+        });
+
+        function formatTimestamp(secondsValue) {
+            const minutes = Math.floor(secondsValue / 60);
+            const seconds = Math.floor(secondsValue % 60);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        // 3. Manual Seek Range Dragging Operations
+        seekSlider.addEventListener('input', () => {
+            if (!isNaN(broadcastPlayer.duration)) {
+                const newTargetTime = (seekSlider.value / 100) * broadcastPlayer.duration;
+                broadcastPlayer.currentTime = newTargetTime;
+            }
+        });
+
+        // 4. Volume Slide Operations
+        volumeSlider.addEventListener('input', (e) => {
+            broadcastPlayer.volume = e.target.value;
+            if (broadcastPlayer.volume === 0) {
+                muteBtn.textContent = "🔇";
+            } else if (broadcastPlayer.volume < 0.5) {
+                muteBtn.textContent = "🔉";
+            } else {
+                muteBtn.textContent = "🔊";
+            }
+        });
+
+        // 5. Instant Mute Button Click
+        muteBtn.addEventListener('click', () => {
+            broadcastPlayer.muted = !broadcastPlayer.muted;
+            if (broadcastPlayer.muted) {
+                muteBtn.textContent = "🔇";
+                volumeSlider.value = 0;
+            } else {
+                muteBtn.textContent = "🔊";
+                volumeSlider.value = broadcastPlayer.volume;
+            }
+        });
+
+
+        // Device Sensing Engine
         function runHardwareDeviceScan() {
             const agentString = navigator.userAgent.toLowerCase();
             const windowWidth = window.innerWidth;
@@ -324,21 +467,16 @@
             deviceDisplayBar.textContent = `OPTIMIZED FOR: ${identifiedHardware}`;
         }
 
-        // Handle secure verification bypass logic routine
         secureGatewayBtn.addEventListener('click', () => {
             const enteredName = authUsernameInput.value.trim();
             if (enteredName === "") {
                 alert("Please enter a username channel handle profile name.");
                 return;
             }
-
-            // Generate profile display attributes dynamically
             userNameDisplay.textContent = enteredName;
             avatarDisplay.textContent = enteredName.charAt(0).toUpperCase();
-
             authOverlay.style.display = "none";
             mainAppWrapper.style.display = "block";
-
             initializeApplicationCore();
         });
 
@@ -358,6 +496,7 @@
                     broadcastPlayer.src = null;
                     broadcastPlayer.srcObject = incomingFeed;
                     liveIndicatorTag.style.display = "block";
+                    customControlsBar.style.display = "none"; // Hide custom control seek sliders during active real-time live events
                 });
             });
         }
@@ -400,114 +539,3 @@
             const filteredResults = platformFeed.filter(item => {
                 return item.title.toLowerCase().includes(searchString) || item.description.toLowerCase().includes(searchString);
             });
-            renderDiscoveryFeed(filteredResults);
-        });
-
-        function executeContentSwitch(item) {
-            killActiveHardwareStream();
-            if (item.type === "video") {
-                if (item.id === "default-welcome") {
-                    broadcastPlayer.srcObject = null;
-                    broadcastPlayer.src = "movie.mp4";
-                    liveIndicatorTag.style.display = "none";
-                } else {
-                    alert(`"Link Asset": Select the video file from your device directory to open "${item.title}".`);
-                    const reLinkInput = document.createElement('input');
-                    reLinkInput.type = 'file';
-                    reLinkInput.accept = 'video/*';
-                    reLinkInput.onchange = (e) => {
-                        const file = e.target.files[0];
-                        if(file) {
-                            broadcastPlayer.srcObject = null;
-                            broadcastPlayer.src = URL.createObjectURL(file);
-                            liveIndicatorTag.style.display = "none";
-                        }
-                    };
-                    reLinkInput.click();
-                }
-            } else if (item.type === "live") {
-                navigator.mediaDevices.getUserMedia({ video: false, audio: false }).then((blankStream) => {
-                    const trackingCall = peerNode.call(item.id, blankStream);
-                    trackingCall.on('stream', (incomingFeed) => {
-                        broadcastPlayer.src = null;
-                        broadcastPlayer.srcObject = incomingFeed;
-                        liveIndicatorTag.style.display = "block";
-                    });
-                });
-            }
-        }
-
-        staticUpload.addEventListener('change', (e) => {
-            const chosenFile = e.target.files[0];
-            if (chosenFile) {
-                let fallbackTitle = chosenFile.name.split('.').slice(0, -1).join('.').replace(/[_-]/g, ' ');
-                const finalTitle = uploadTitleInput.value.trim() || fallbackTitle;
-                const finalDesc = uploadDescInput.value.trim() || `Saved Content Library File.`;
-
-                const newVideoEntry = {
-                    id: "saved-file-" + Date.now(),
-                    type: "video",
-                    title: finalTitle,
-                    description: finalDesc
-                };
-
-                platformFeed.unshift(newVideoEntry);
-                commitFeedToPermanentStorage();
-                renderDiscoveryFeed(platformFeed);
-
-                uploadTitleInput.value = "";
-                uploadDescInput.value = "";
-                
-                broadcastPlayer.srcObject = null;
-                broadcastPlayer.src = URL.createObjectURL(chosenFile);
-                liveIndicatorTag.style.display = "none";
-            }
-        });
-
-        initiateStreamBtn.addEventListener('click', async () => {
-            const myCurrentId = peerNode.id;
-            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const finalTitle = streamTitleInput.value.trim() || `Live Stream #${myCurrentId.substring(0, 5)}`;
-            const finalDesc = streamDescInput.value.trim() || `Active live feed room opened at ${timeString}.`;
-
-            try {
-                hardwareStreamReference = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 1280, height: 720, facingMode: "user" },
-                    audio: true
-                });
-                
-                broadcastPlayer.src = null;
-                broadcastPlayer.srcObject = hardwareStreamReference;
-                broadcastPlayer.muted = true;
-                
-                liveIndicatorTag.style.display = "block";
-                initiateStreamBtn.style.display = "none";
-                terminateStreamBtn.style.display = "inline-flex";
-
-                const newLiveEntry = { id: myCurrentId, type: "live", title: finalTitle, description: finalDesc };
-                platformFeed.unshift(newLiveEntry);
-                renderDiscoveryFeed(platformFeed);
-            } catch (err) {
-                alert("Please approve camera access protocols.");
-            }
-        });
-
-        terminateStreamBtn.addEventListener('click', () => {
-            killActiveHardwareStream();
-            terminateStreamBtn.style.display = "none";
-            initiateStreamBtn.style.display = "inline-flex";
-            platformFeed = platformFeed.filter(item => item.id !== peerNode.id);
-            renderDiscoveryFeed(platformFeed);
-            broadcastPlayer.srcObject = null;
-            liveIndicatorTag.style.display = "none";
-        });
-
-        function killActiveHardwareStream() {
-            if (hardwareStreamReference) {
-                hardwareStreamReference.getTracks().forEach(track => track.stop());
-                hardwareStreamReference = null;
-            }
-        }
-    </script>
-</body>
-</html>
