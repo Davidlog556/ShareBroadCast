@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareBroadCast - Fail-Safe Edition</title>
+    <title>ShareBroadCast - Persistent Session Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
 
@@ -235,6 +235,19 @@
         .btn-stream { background-color: var(--accent-neon); color: #000; }
         .btn-stop { background-color: #ff3333; display: none; }
 
+        /* Logout button style */
+        .btn-logout {
+            background-color: #333;
+            border: 1px solid #ff3333;
+            color: #ff3333;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
         .input-box {
             width: 100%;
             background-color: #0d0d0d;
@@ -298,6 +311,7 @@
             <div class="user-profile">
                 <div class="user-avatar" id="avatarDisplay" style="display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--accent-neon);">U</div>
                 <span id="userNameDisplay" style="font-size: 0.9rem; font-weight: 600;">Profile</span>
+                <button class="btn-logout" id="logoutBtn">Forget Session</button>
             </div>
         </header>
 
@@ -360,6 +374,7 @@
         const userNameDisplay = document.getElementById('userNameDisplay');
         const authUsernameInput = document.getElementById('authUsernameInput');
         const secureGatewayBtn = document.getElementById('secureGatewayBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
         
         const broadcastPlayer = document.getElementById('broadcastPlayer');
         const liveIndicatorTag = document.getElementById('liveIndicatorTag');
@@ -386,7 +401,7 @@
         let hardwareStreamReference = null;
         let platformFeed = [];
 
-        // Custom Player Engine
+        // Custom Player Controls Logic
         playPauseBtn.addEventListener('click', togglePlayPause);
         broadcastPlayer.addEventListener('click', togglePlayPause);
 
@@ -440,43 +455,59 @@
             deviceDisplayBar.textContent = `OPTIMIZED FOR: ${identifiedHardware}`;
         }
 
-        // FIX: The instant unlock sequence is separated from the network constructor
+        // --- NEW CHOREOGRAPHY: Session Automatic Recovery Engine ---
+        function runSessionInitializationCheck() {
+            // Check if a user session username was logged previously
+            const rememberedUser = localStorage.getItem('sharebroadcast_active_session_user');
+            
+            if (rememberedUser) {
+                // If found, fire the setup instantly using the stored string!
+                executeAppLoginUnlock(rememberedUser);
+            } else {
+                // If empty, keep the login overlay box showing
+                authOverlay.style.display = "flex";
+            }
+            runHardwareDeviceScan();
+        }
+
         secureGatewayBtn.addEventListener('click', () => {
             const enteredName = authUsernameInput.value.trim();
             if (enteredName === "") {
                 alert("Please enter a username handle.");
                 return;
             }
+            // Save the handle into permanent memory before logging in
+            localStorage.setItem('sharebroadcast_active_session_user', enteredName);
+            executeAppLoginUnlock(enteredName);
+        });
 
-            userNameDisplay.textContent = enteredName;
-            avatarDisplay.textContent = enteredName.charAt(0).toUpperCase();
+        function executeAppLoginUnlock(username) {
+            userNameDisplay.textContent = username;
+            avatarDisplay.textContent = username.charAt(0).toUpperCase();
             
-            // Unlocks the screen instantly, no matter what the cloud server status is!
             authOverlay.style.display = "none";
             mainAppWrapper.style.display = "block";
 
-            // Run network setup safely in the background
+            // Boot up core video engine pipelines
             initializeApplicationCore();
             loadSavedFeedFromStorage();
+        }
+
+        // Forget Session Action
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('sharebroadcast_active_session_user');
+            location.reload(); // Reload the single page to lock it down again
         });
 
-        window.onload = runHardwareDeviceScan;
+        window.onload = runSessionInitializationCheck;
         window.addEventListener('resize', runHardwareDeviceScan);
 
         function initializeApplicationCore() {
-            // Safe network wrapper initialization
             try {
                 peerNode = new Peer();
+                peerNode.on('open', (id) => { networkKeyDisplay.textContent = id; });
+                peerNode.on('error', () => { networkKeyDisplay.textContent = "Offline Mode (Local Storage Active)"; });
                 
-                peerNode.on('open', (id) => {
-                    networkKeyDisplay.textContent = id;
-                });
-
-                peerNode.on('error', (err) => {
-                    console.warn("PeerJS Cloud Connection Warning:", err.type);
-                    networkKeyDisplay.textContent = "Offline Mode (Local Storage Active)";
-                });
-
                 peerNode.on('call', (incomingCall) => {
                     incomingCall.answer(hardwareStreamReference || null);
                     incomingCall.on('stream', (incomingFeed) => {
@@ -515,123 +546,4 @@
                 card.innerHTML = `
                     <h4>
                         <span>${item.title}</span>
-                        <span class="type-pill" style="background-color: ${item.type === 'live' ? '#ff0055' : '#333'}">${item.type.toUpperCase()}</span>
-                    </h4>
-                    <p>${item.description}</p>
-                `;
-                card.addEventListener('click', () => executeContentSwitch(item));
-                feedDisplayGrid.appendChild(card);
-            });
-        }
-
-        function executeContentSwitch(item) {
-            killActiveHardwareStream();
-            if (item.type === "video") {
-                customControlsBar.style.display = "flex"; 
-                if (item.id === "default-welcome") {
-                    broadcastPlayer.srcObject = null;
-                    broadcastPlayer.src = "movie.mp4";
-                    liveIndicatorTag.style.display = "none";
-                } else {
-                    alert(`Select the video file from your device directory to open "${item.title}".`);
-                    const reLinkInput = document.createElement('input');
-                    reLinkInput.type = 'file';
-                    reLinkInput.accept = 'video/*';
-                    reLinkInput.onchange = (e) => {
-                        const file = e.target.files[0];
-                        if(file) {
-                            broadcastPlayer.srcObject = null;
-                            broadcastPlayer.src = URL.createObjectURL(file);
-                            liveIndicatorTag.style.display = "none";
-                        }
-                    };
-                    reLinkInput.click();
-                }
-            } else if (item.type === "live") {
-                if(!peerNode || peerNode.disconnected) {
-                    alert("Cannot join stream. Cloud signaling server is currently unreachable.");
-                    return;
-                }
-                customControlsBar.style.display = "none"; 
-                navigator.mediaDevices.getUserMedia({ video: false, audio: false }).then((blankStream) => {
-                    const trackingCall = peerNode.call(item.id, blankStream);
-                    trackingCall.on('stream', (incomingFeed) => {
-                        broadcastPlayer.src = null;
-                        broadcastPlayer.srcObject = incomingFeed;
-                        liveIndicatorTag.style.display = "block";
-                    });
-                });
-            }
-        }
-
-        staticUpload.addEventListener('change', (e) => {
-            const chosenFile = e.target.files[0];
-            if (chosenFile) {
-                let fallbackTitle = chosenFile.name.split('.').slice(0, -1).join('.').replace(/[_-]/g, ' ');
-                const finalTitle = uploadTitleInput.value.trim() || fallbackTitle;
-                const finalDesc = uploadDescInput.value.trim() || `Saved Content Library File.`;
-
-                const newVideoEntry = { id: "saved-file-" + Date.now(), type: "video", title: finalTitle, description: finalDesc };
-                platformFeed.unshift(newVideoEntry);
-                commitFeedToPermanentStorage();
-                renderDiscoveryFeed(platformFeed);
-
-                uploadTitleInput.value = "";
-                uploadDescInput.value = "";
-                customControlsBar.style.display = "flex";
-                broadcastPlayer.srcObject = null;
-                broadcastPlayer.src = URL.createObjectURL(chosenFile);
-                liveIndicatorTag.style.display = "none";
-            }
-        });
-
-        initiateStreamBtn.addEventListener('click', async () => {
-            if(!peerNode || peerNode.disconnected) {
-                alert("Cloud connection unavailable. You can upload video files, but live broadcasting requires an active network connection.");
-                return;
-            }
-            const myCurrentId = peerNode.id;
-            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const finalTitle = streamTitleInput.value.trim() || `Live Stream #${myCurrentId.substring(0, 5)}`;
-            const finalDesc = streamDescInput.value.trim() || `Active live feed room opened at ${timeString}.`;
-
-            try {
-                hardwareStreamReference = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 1280, height: 720, facingMode: "user" },
-                    audio: true
-                });
-                broadcastPlayer.src = null;
-                broadcastPlayer.srcObject = hardwareStreamReference;
-                broadcastPlayer.muted = true;
-                liveIndicatorTag.style.display = "block";
-                initiateStreamBtn.style.display = "none";
-                terminateStreamBtn.style.display = "inline-flex";
-
-                const newLiveEntry = { id: myCurrentId, type: "live", title: finalTitle, description: finalDesc };
-                platformFeed.unshift(newLiveEntry);
-                renderDiscoveryFeed(platformFeed);
-            } catch (err) {
-                alert("Please approve camera access protocols.");
-            }
-        });
-
-        terminateStreamBtn.addEventListener('click', () => {
-            killActiveHardwareStream();
-            terminateStreamBtn.style.display = "none";
-            initiateStreamBtn.style.display = "inline-flex";
-            platformFeed = platformFeed.filter(item => item.id !== peerNode.id);
-            renderDiscoveryFeed(platformFeed);
-            broadcastPlayer.srcObject = null;
-            liveIndicatorTag.style.display = "none";
-            customControlsBar.style.display = "flex";
-        });
-
-        function killActiveHardwareStream() {
-            if (hardwareStreamReference) {
-                hardwareStreamReference.getTracks().forEach(track => track.stop());
-                hardwareStreamReference = null;
-            }
-        }
-    </script>
-</body>
-</html>
+                        <span class="type-pill" style="background-
