@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareBroadCast - RGB Player Edition</title>
+    <title>ShareBroadCast - Fail-Safe Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
 
@@ -11,6 +11,8 @@
         :root {
             --bg-primary: #0a0a0a;
             --bg-card: #141414;
+            --accent-neon: #00ffcc;
+            --accent-pink: #ff0055;
             --text-main: #ffffff;
             --text-muted: #888888;
         }
@@ -25,7 +27,7 @@
 
         .device-status-bar {
             background-color: #000000;
-            color: #00ffcc;
+            color: var(--accent-neon);
             text-align: center;
             padding: 8px;
             font-size: 0.85rem;
@@ -53,7 +55,7 @@
             background-color: var(--bg-card);
             padding: 40px;
             border-radius: 16px;
-            border: 2px solid #ff0055;
+            border: 2px solid var(--accent-pink);
             text-align: center;
             max-width: 400px;
             width: 90%;
@@ -70,13 +72,13 @@
             align-items: center;
             padding: 15px 20px;
             background-color: #000000;
-            border-bottom: 2px solid #ff0055;
+            border-bottom: 2px solid var(--accent-pink);
         }
 
         .site-header h1 {
             margin: 0;
             font-size: 1.6rem;
-            color: #ff0055;
+            color: var(--accent-pink);
             letter-spacing: 1px;
         }
 
@@ -90,7 +92,7 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 1px solid #00ffcc;
+            border: 1px solid var(--accent-neon);
             background-color: #333;
         }
 
@@ -103,7 +105,7 @@
             padding: 15px;
         }
 
-        /* --- THE RGB VIDEO PLAYER FRAMEWORK --- */
+        /* CUSTOM RGB VIDEO PLAYER FRAMEWORK */
         .player-box {
             background-color: #000000;
             border-radius: 14px;
@@ -111,8 +113,6 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            
-            /* Dynamic RGB Flow Border Effect */
             border: 3px solid transparent;
             background-image: linear-gradient(#000, #000), 
                               linear-gradient(90deg, #ff0055, #00ffcc, #ffcc00, #ff0055);
@@ -134,25 +134,21 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            background-color: #ff0055;
+            background-color: var(--accent-pink);
             padding: 4px 8px;
             font-size: 0.75rem;
             font-weight: bold;
             border-radius: 4px;
             display: none;
             z-index: 5;
-            box-shadow: 0 0 10px #ff0055;
         }
 
-        /* CUSTOM RGB PLAYER CONTROLS PANEL */
         .custom-controls {
             background-color: #050505;
             display: flex;
             align-items: center;
             padding: 12px 18px;
             gap: 15px;
-            
-            /* Top border shifting line */
             border-top: 1px solid transparent;
             background-image: linear-gradient(#050505, #050505), 
                               linear-gradient(90deg, #00ffcc, #ff0055, #00ffcc);
@@ -168,29 +164,20 @@
             color: var(--text-main);
             font-size: 1.2rem;
             cursor: pointer;
-            transition: transform 0.1s, color 0.2s;
         }
 
-        .control-btn:hover {
-            color: #00ffcc;
-            transform: scale(1.1);
-        }
-
-        /* Custom RGB Range Sliders */
         .seek-slider {
             flex-grow: 1;
-            accent-color: #ff0055;
+            accent-color: var(--accent-pink);
             cursor: pointer;
             height: 6px;
-            border-radius: 3px;
         }
 
         .time-display {
             font-size: 0.85rem;
-            color: #00ffcc;
+            color: var(--accent-neon);
             font-family: monospace;
             min-width: 90px;
-            text-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
         }
 
         .volume-container {
@@ -201,18 +188,16 @@
 
         .volume-slider {
             width: 70px;
-            accent-color: #00ffcc;
+            accent-color: var(--accent-neon);
             cursor: pointer;
         }
 
-        /* ANIMATION TIMELINES */
         @keyframes rgbShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* Dashboard Styles */
         .dashboard {
             background-color: var(--bg-card);
             border-radius: 12px;
@@ -224,7 +209,7 @@
         .section-title {
             margin-top: 0;
             font-size: 1.1rem;
-            color: #00ffcc;
+            color: var(--accent-neon);
             border-bottom: 1px solid #222;
             padding-bottom: 8px;
             margin-bottom: 12px;
@@ -234,7 +219,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #ff0055;
+            background-color: var(--accent-pink);
             color: white;
             border: none;
             padding: 12px 20px;
@@ -247,7 +232,7 @@
             margin-bottom: 10px;
         }
 
-        .btn-stream { background-color: #00ffcc; color: #000; }
+        .btn-stream { background-color: var(--accent-neon); color: #000; }
         .btn-stop { background-color: #ff3333; display: none; }
 
         .input-box {
@@ -269,14 +254,14 @@
 
         .feed-card {
             background-color: #1a1a1a;
-            border-left: 4px solid #00ffcc;
+            border-left: 4px solid var(--accent-neon);
             padding: 12px;
             margin-bottom: 10px;
             border-radius: 4px;
             cursor: pointer;
         }
 
-        .feed-card.is-live { border-left-color: #ff0055; }
+        .feed-card.is-live { border-left-color: var(--accent-pink); }
         .feed-card h4 { margin: 0 0 4px 0; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
         .feed-card p { margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
 
@@ -300,7 +285,7 @@
 
     <div id="authOverlay">
         <div class="auth-card">
-            <h2 style="color: #ff0055; margin-top: 0;">SHAREBROADCAST</h2>
+            <h2 style="color: var(--accent-pink); margin-top: 0;">SHAREBROADCAST</h2>
             <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Connect your account profile to access active channels and saved media files.</p>
             <input type="text" id="authUsernameInput" class="input-box" placeholder="Enter Channel Username..." style="text-align: center;">
             <button class="btn" id="secureGatewayBtn" style="width: 100%;">Instant Secure Connect</button>
@@ -311,7 +296,7 @@
         <header class="site-header">
             <h1>SHAREBROADCAST</h1>
             <div class="user-profile">
-                <div class="user-avatar" id="avatarDisplay" style="display: flex; align-items: center; justify-content: center; font-weight: bold; color: #00ffcc;">U</div>
+                <div class="user-avatar" id="avatarDisplay" style="display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--accent-neon);">U</div>
                 <span id="userNameDisplay" style="font-size: 0.9rem; font-weight: 600;">Profile</span>
             </div>
         </header>
@@ -320,16 +305,12 @@
             <main>
                 <div class="player-box">
                     <div class="live-tag" id="liveIndicatorTag">Live Stream</div>
-                    
                     <video id="broadcastPlayer" autoplay playsinline></video>
                     
                     <div class="custom-controls" id="customControlsBar">
                         <button class="control-btn" id="playPauseBtn">▶</button>
-                        
                         <input type="range" id="seekSlider" class="seek-slider" min="0" max="100" value="0">
-                        
                         <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
-                        
                         <div class="volume-container">
                             <button class="control-btn" id="muteBtn" style="font-size: 0.95rem;">🔊</button>
                             <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.1" value="1">
@@ -340,7 +321,7 @@
                 <div class="dashboard">
                     <h3 class="section-title">Live Studio</h3>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0;">
-                        Channel Routing Key: <strong id="networkKeyDisplay" style="color:#00ffcc;">Connecting...</strong>
+                        Channel Routing Key: <strong id="networkKeyDisplay" style="color:var(--accent-neon);">Connecting to Cloud Relay...</strong>
                     </p>
                     <input type="text" id="streamTitleInput" class="input-box" placeholder="Stream Title (Optional)">
                     <input type="text" id="streamDescInput" class="input-box" placeholder="Stream Description (Optional)">
@@ -350,4 +331,307 @@
 
                 <div class="dashboard">
                     <h3 class="section-title">Save & Publish Media Files</h3>
-                    <input type="text" id="uploadTitleInput" class="input-box
+                    <input type="text" id="uploadTitleInput" class="input-box" placeholder="Video Title (Optional)">
+                    <input type="text" id="uploadDescInput" class="input-box" placeholder="Video Description (Optional)">
+                    <label class="btn" style="background-color: #222; border: 1px solid var(--accent-pink); color: var(--accent-pink); margin-bottom:0;">
+                        Upload & Save to Feed List
+                        <input type="file" id="staticUpload" accept="video/*" style="display:none;">
+                    </label>
+                </div>
+            </main>
+
+            <aside>
+                <div class="dashboard" style="margin-top:0;">
+                    <h3 class="section-title">Your Saved Feed</h3>
+                    <div class="search-wrapper">
+                        <input type="text" id="feedSearchBox" class="input-box" style="margin-bottom:0;" placeholder="🔍 Search saved items...">
+                    </div>
+                    <div class="feed-scrollbox" id="feedDisplayGrid"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const deviceDisplayBar = document.getElementById('deviceDisplayBar');
+        const authOverlay = document.getElementById('authOverlay');
+        const mainAppWrapper = document.getElementById('mainAppWrapper');
+        const avatarDisplay = document.getElementById('avatarDisplay');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const authUsernameInput = document.getElementById('authUsernameInput');
+        const secureGatewayBtn = document.getElementById('secureGatewayBtn');
+        
+        const broadcastPlayer = document.getElementById('broadcastPlayer');
+        const liveIndicatorTag = document.getElementById('liveIndicatorTag');
+        const networkKeyDisplay = document.getElementById('networkKeyDisplay');
+        const initiateStreamBtn = document.getElementById('initiateStreamBtn');
+        const terminateStreamBtn = document.getElementById('terminateStreamBtn');
+        const staticUpload = document.getElementById('staticUpload');
+        const feedSearchBox = document.getElementById('feedSearchBox');
+        const feedDisplayGrid = document.getElementById('feedDisplayGrid');
+
+        const streamTitleInput = document.getElementById('streamTitleInput');
+        const streamDescInput = document.getElementById('streamDescInput');
+        const uploadTitleInput = document.getElementById('uploadTitleInput');
+        const uploadDescInput = document.getElementById('uploadDescInput');
+
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const seekSlider = document.getElementById('seekSlider');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const customControlsBar = document.getElementById('customControlsBar');
+
+        let peerNode = null;
+        let hardwareStreamReference = null;
+        let platformFeed = [];
+
+        // Custom Player Engine
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        broadcastPlayer.addEventListener('click', togglePlayPause);
+
+        function togglePlayPause() {
+            if (broadcastPlayer.paused || broadcastPlayer.ended) {
+                broadcastPlayer.play();
+                playPauseBtn.textContent = "⏸";
+            } else {
+                broadcastPlayer.pause();
+                playPauseBtn.textContent = "▶";
+            }
+        }
+
+        broadcastPlayer.addEventListener('timeupdate', () => {
+            if (!isNaN(broadcastPlayer.duration)) {
+                const progressPercentage = (broadcastPlayer.currentTime / broadcastPlayer.duration) * 100;
+                seekSlider.value = progressPercentage;
+                timeDisplay.textContent = `${formatTimestamp(broadcastPlayer.currentTime)} / ${formatTimestamp(broadcastPlayer.duration)}`;
+            }
+        });
+
+        function formatTimestamp(secondsValue) {
+            const minutes = Math.floor(secondsValue / 60);
+            const seconds = Math.floor(secondsValue % 60);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        seekSlider.addEventListener('input', () => {
+            if (!isNaN(broadcastPlayer.duration)) {
+                broadcastPlayer.currentTime = (seekSlider.value / 100) * broadcastPlayer.duration;
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            broadcastPlayer.volume = e.target.value;
+            muteBtn.textContent = broadcastPlayer.volume === 0 ? "🔇" : broadcastPlayer.volume < 0.5 ? "🔉" : "🔊";
+        });
+
+        muteBtn.addEventListener('click', () => {
+            broadcastPlayer.muted = !broadcastPlayer.muted;
+            muteBtn.textContent = broadcastPlayer.muted ? "🔇" : "🔊";
+            volumeSlider.value = broadcastPlayer.muted ? 0 : broadcastPlayer.volume;
+        });
+
+        // Device Scanning
+        function runHardwareDeviceScan() {
+            const agentString = navigator.userAgent.toLowerCase();
+            let identifiedHardware = "PC / LAPTOP CONSOLE MODE";
+            if (/mobi|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(agentString)) identifiedHardware = "MOBILE PORTABLE PHONE MODE";
+            if (/ipad|tablet|(android(?!.*mobi))/i.test(agentString)) identifiedHardware = "TABLET CONTROLLER PANEL MODE";
+            deviceDisplayBar.textContent = `OPTIMIZED FOR: ${identifiedHardware}`;
+        }
+
+        // FIX: The instant unlock sequence is separated from the network constructor
+        secureGatewayBtn.addEventListener('click', () => {
+            const enteredName = authUsernameInput.value.trim();
+            if (enteredName === "") {
+                alert("Please enter a username handle.");
+                return;
+            }
+
+            userNameDisplay.textContent = enteredName;
+            avatarDisplay.textContent = enteredName.charAt(0).toUpperCase();
+            
+            // Unlocks the screen instantly, no matter what the cloud server status is!
+            authOverlay.style.display = "none";
+            mainAppWrapper.style.display = "block";
+
+            // Run network setup safely in the background
+            initializeApplicationCore();
+            loadSavedFeedFromStorage();
+        });
+
+        window.onload = runHardwareDeviceScan;
+        window.addEventListener('resize', runHardwareDeviceScan);
+
+        function initializeApplicationCore() {
+            // Safe network wrapper initialization
+            try {
+                peerNode = new Peer();
+                
+                peerNode.on('open', (id) => {
+                    networkKeyDisplay.textContent = id;
+                });
+
+                peerNode.on('error', (err) => {
+                    console.warn("PeerJS Cloud Connection Warning:", err.type);
+                    networkKeyDisplay.textContent = "Offline Mode (Local Storage Active)";
+                });
+
+                peerNode.on('call', (incomingCall) => {
+                    incomingCall.answer(hardwareStreamReference || null);
+                    incomingCall.on('stream', (incomingFeed) => {
+                        broadcastPlayer.src = null;
+                        broadcastPlayer.srcObject = incomingFeed;
+                        liveIndicatorTag.style.display = "block";
+                        customControlsBar.style.display = "none"; 
+                    });
+                });
+            } catch (e) {
+                networkKeyDisplay.textContent = "Offline Mode Active";
+            }
+        }
+
+        function loadSavedFeedFromStorage() {
+            const preservedData = localStorage.getItem('sharebroadcast_saved_feed');
+            const fallbackDefault = [{
+                id: "default-welcome",
+                type: "video",
+                title: "Welcome Setup Guide",
+                description: "Upload videos below to save them straight onto your browser storage list."
+            }];
+            platformFeed = preservedData ? JSON.parse(preservedData) : fallbackDefault;
+            renderDiscoveryFeed(platformFeed);
+        }
+
+        function commitFeedToPermanentStorage() {
+            localStorage.setItem('sharebroadcast_saved_feed', JSON.stringify(platformFeed));
+        }
+
+        function renderDiscoveryFeed(itemsToRender) {
+            feedDisplayGrid.innerHTML = "";
+            itemsToRender.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `feed-card ${item.type === 'live' ? 'is-live' : ''}`;
+                card.innerHTML = `
+                    <h4>
+                        <span>${item.title}</span>
+                        <span class="type-pill" style="background-color: ${item.type === 'live' ? '#ff0055' : '#333'}">${item.type.toUpperCase()}</span>
+                    </h4>
+                    <p>${item.description}</p>
+                `;
+                card.addEventListener('click', () => executeContentSwitch(item));
+                feedDisplayGrid.appendChild(card);
+            });
+        }
+
+        function executeContentSwitch(item) {
+            killActiveHardwareStream();
+            if (item.type === "video") {
+                customControlsBar.style.display = "flex"; 
+                if (item.id === "default-welcome") {
+                    broadcastPlayer.srcObject = null;
+                    broadcastPlayer.src = "movie.mp4";
+                    liveIndicatorTag.style.display = "none";
+                } else {
+                    alert(`Select the video file from your device directory to open "${item.title}".`);
+                    const reLinkInput = document.createElement('input');
+                    reLinkInput.type = 'file';
+                    reLinkInput.accept = 'video/*';
+                    reLinkInput.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if(file) {
+                            broadcastPlayer.srcObject = null;
+                            broadcastPlayer.src = URL.createObjectURL(file);
+                            liveIndicatorTag.style.display = "none";
+                        }
+                    };
+                    reLinkInput.click();
+                }
+            } else if (item.type === "live") {
+                if(!peerNode || peerNode.disconnected) {
+                    alert("Cannot join stream. Cloud signaling server is currently unreachable.");
+                    return;
+                }
+                customControlsBar.style.display = "none"; 
+                navigator.mediaDevices.getUserMedia({ video: false, audio: false }).then((blankStream) => {
+                    const trackingCall = peerNode.call(item.id, blankStream);
+                    trackingCall.on('stream', (incomingFeed) => {
+                        broadcastPlayer.src = null;
+                        broadcastPlayer.srcObject = incomingFeed;
+                        liveIndicatorTag.style.display = "block";
+                    });
+                });
+            }
+        }
+
+        staticUpload.addEventListener('change', (e) => {
+            const chosenFile = e.target.files[0];
+            if (chosenFile) {
+                let fallbackTitle = chosenFile.name.split('.').slice(0, -1).join('.').replace(/[_-]/g, ' ');
+                const finalTitle = uploadTitleInput.value.trim() || fallbackTitle;
+                const finalDesc = uploadDescInput.value.trim() || `Saved Content Library File.`;
+
+                const newVideoEntry = { id: "saved-file-" + Date.now(), type: "video", title: finalTitle, description: finalDesc };
+                platformFeed.unshift(newVideoEntry);
+                commitFeedToPermanentStorage();
+                renderDiscoveryFeed(platformFeed);
+
+                uploadTitleInput.value = "";
+                uploadDescInput.value = "";
+                customControlsBar.style.display = "flex";
+                broadcastPlayer.srcObject = null;
+                broadcastPlayer.src = URL.createObjectURL(chosenFile);
+                liveIndicatorTag.style.display = "none";
+            }
+        });
+
+        initiateStreamBtn.addEventListener('click', async () => {
+            if(!peerNode || peerNode.disconnected) {
+                alert("Cloud connection unavailable. You can upload video files, but live broadcasting requires an active network connection.");
+                return;
+            }
+            const myCurrentId = peerNode.id;
+            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const finalTitle = streamTitleInput.value.trim() || `Live Stream #${myCurrentId.substring(0, 5)}`;
+            const finalDesc = streamDescInput.value.trim() || `Active live feed room opened at ${timeString}.`;
+
+            try {
+                hardwareStreamReference = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 1280, height: 720, facingMode: "user" },
+                    audio: true
+                });
+                broadcastPlayer.src = null;
+                broadcastPlayer.srcObject = hardwareStreamReference;
+                broadcastPlayer.muted = true;
+                liveIndicatorTag.style.display = "block";
+                initiateStreamBtn.style.display = "none";
+                terminateStreamBtn.style.display = "inline-flex";
+
+                const newLiveEntry = { id: myCurrentId, type: "live", title: finalTitle, description: finalDesc };
+                platformFeed.unshift(newLiveEntry);
+                renderDiscoveryFeed(platformFeed);
+            } catch (err) {
+                alert("Please approve camera access protocols.");
+            }
+        });
+
+        terminateStreamBtn.addEventListener('click', () => {
+            killActiveHardwareStream();
+            terminateStreamBtn.style.display = "none";
+            initiateStreamBtn.style.display = "inline-flex";
+            platformFeed = platformFeed.filter(item => item.id !== peerNode.id);
+            renderDiscoveryFeed(platformFeed);
+            broadcastPlayer.srcObject = null;
+            liveIndicatorTag.style.display = "none";
+            customControlsBar.style.display = "flex";
+        });
+
+        function killActiveHardwareStream() {
+            if (hardwareStreamReference) {
+                hardwareStreamReference.getTracks().forEach(track => track.stop());
+                hardwareStreamReference = null;
+            }
+        }
+    </script>
+</body>
+</html>
