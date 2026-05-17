@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareBroadCast - Custom Player Edition</title>
+    <title>ShareBroadCast - RGB Player Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
 
     <style>
         :root {
-            --bg-primary: #121212;
-            --bg-card: #1e1e1e;
-            --accent-neon: #00ffcc;
-            --accent-pink: #ff0055;
+            --bg-primary: #0a0a0a;
+            --bg-card: #141414;
             --text-main: #ffffff;
-            --text-muted: #b3b3b3;
+            --text-muted: #888888;
         }
 
         body {
@@ -27,13 +25,13 @@
 
         .device-status-bar {
             background-color: #000000;
-            color: var(--accent-neon);
+            color: #00ffcc;
             text-align: center;
             padding: 8px;
             font-size: 0.85rem;
             font-weight: bold;
             letter-spacing: 1px;
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid #222;
         }
 
         /* Login Gateway Overlay */
@@ -55,7 +53,7 @@
             background-color: var(--bg-card);
             padding: 40px;
             border-radius: 16px;
-            border: 2px solid var(--accent-pink);
+            border: 2px solid #ff0055;
             text-align: center;
             max-width: 400px;
             width: 90%;
@@ -72,13 +70,13 @@
             align-items: center;
             padding: 15px 20px;
             background-color: #000000;
-            border-bottom: 2px solid var(--accent-pink);
+            border-bottom: 2px solid #ff0055;
         }
 
         .site-header h1 {
             margin: 0;
             font-size: 1.6rem;
-            color: var(--accent-pink);
+            color: #ff0055;
             letter-spacing: 1px;
         }
 
@@ -92,7 +90,7 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 1px solid var(--accent-neon);
+            border: 1px solid #00ffcc;
             background-color: #333;
         }
 
@@ -105,18 +103,26 @@
             padding: 15px;
         }
 
-        /* CUSTOM VIDEO PLAYER CONTAINER */
+        /* --- THE RGB VIDEO PLAYER FRAMEWORK --- */
         .player-box {
             background-color: #000000;
-            border: 2px solid var(--accent-pink);
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
             position: relative;
             display: flex;
             flex-direction: column;
+            
+            /* Dynamic RGB Flow Border Effect */
+            border: 3px solid transparent;
+            background-image: linear-gradient(#000, #000), 
+                              linear-gradient(90deg, #ff0055, #00ffcc, #ffcc00, #ff0055);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            background-size: 300% 300%;
+            animation: rgbShift 6s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.15);
         }
 
-        /* Removed native controls, video takes up screen space */
         video {
             width: 100%;
             aspect-ratio: 16/9;
@@ -128,42 +134,52 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            background-color: var(--accent-pink);
+            background-color: #ff0055;
             padding: 4px 8px;
             font-size: 0.75rem;
             font-weight: bold;
             border-radius: 4px;
             display: none;
             z-index: 5;
+            box-shadow: 0 0 10px #ff0055;
         }
 
-        /* CUSTOM MEDIA PLAYER CONTROLS BAR */
+        /* CUSTOM RGB PLAYER CONTROLS PANEL */
         .custom-controls {
-            background-color: #0a0a0a;
+            background-color: #050505;
             display: flex;
             align-items: center;
-            padding: 10px 15px;
+            padding: 12px 18px;
             gap: 15px;
-            border-top: 1px solid #222;
+            
+            /* Top border shifting line */
+            border-top: 1px solid transparent;
+            background-image: linear-gradient(#050505, #050505), 
+                              linear-gradient(90deg, #00ffcc, #ff0055, #00ffcc);
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            background-size: 200% 100%;
+            animation: rgbShift 4s linear infinite;
         }
 
         .control-btn {
             background: none;
             border: none;
             color: var(--text-main);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            font-weight: bold;
+            transition: transform 0.1s, color 0.2s;
         }
 
         .control-btn:hover {
-            color: var(--accent-neon);
+            color: #00ffcc;
+            transform: scale(1.1);
         }
 
-        /* Custom Seek Progress Slider styling */
+        /* Custom RGB Range Sliders */
         .seek-slider {
             flex-grow: 1;
-            accent-color: var(--accent-pink);
+            accent-color: #ff0055;
             cursor: pointer;
             height: 6px;
             border-radius: 3px;
@@ -171,9 +187,10 @@
 
         .time-display {
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: #00ffcc;
             font-family: monospace;
             min-width: 90px;
+            text-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
         }
 
         .volume-container {
@@ -184,24 +201,31 @@
 
         .volume-slider {
             width: 70px;
-            accent-color: var(--accent-neon);
+            accent-color: #00ffcc;
             cursor: pointer;
         }
 
-        /* Dashboard styles */
+        /* ANIMATION TIMELINES */
+        @keyframes rgbShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Dashboard Styles */
         .dashboard {
             background-color: var(--bg-card);
             border-radius: 12px;
             padding: 15px;
-            border: 1px solid #2a2a2a;
+            border: 1px solid #222;
             margin-top: 15px;
         }
 
         .section-title {
             margin-top: 0;
             font-size: 1.1rem;
-            color: var(--accent-neon);
-            border-bottom: 1px solid #333;
+            color: #00ffcc;
+            border-bottom: 1px solid #222;
             padding-bottom: 8px;
             margin-bottom: 12px;
         }
@@ -210,7 +234,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--accent-pink);
+            background-color: #ff0055;
             color: white;
             border: none;
             padding: 12px 20px;
@@ -223,13 +247,13 @@
             margin-bottom: 10px;
         }
 
-        .btn-stream { background-color: var(--accent-neon); color: #000; }
+        .btn-stream { background-color: #00ffcc; color: #000; }
         .btn-stop { background-color: #ff3333; display: none; }
 
         .input-box {
             width: 100%;
-            background-color: #121212;
-            border: 1px solid #444;
+            background-color: #0d0d0d;
+            border: 1px solid #333;
             color: white;
             padding: 12px;
             font-size: 0.95rem;
@@ -244,15 +268,15 @@
         }
 
         .feed-card {
-            background-color: #262626;
-            border-left: 4px solid var(--accent-neon);
+            background-color: #1a1a1a;
+            border-left: 4px solid #00ffcc;
             padding: 12px;
             margin-bottom: 10px;
             border-radius: 4px;
             cursor: pointer;
         }
 
-        .feed-card.is-live { border-left-color: var(--accent-pink); }
+        .feed-card.is-live { border-left-color: #ff0055; }
         .feed-card h4 { margin: 0 0 4px 0; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; }
         .feed-card p { margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
 
@@ -260,7 +284,7 @@
             font-size: 0.7rem;
             padding: 2px 6px;
             border-radius: 3px;
-            background: #444;
+            background: #333;
             color: #fff;
         }
 
@@ -276,7 +300,7 @@
 
     <div id="authOverlay">
         <div class="auth-card">
-            <h2 style="color: var(--accent-pink); margin-top: 0;">SHAREBROADCAST</h2>
+            <h2 style="color: #ff0055; margin-top: 0;">SHAREBROADCAST</h2>
             <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Connect your account profile to access active channels and saved media files.</p>
             <input type="text" id="authUsernameInput" class="input-box" placeholder="Enter Channel Username..." style="text-align: center;">
             <button class="btn" id="secureGatewayBtn" style="width: 100%;">Instant Secure Connect</button>
@@ -287,7 +311,7 @@
         <header class="site-header">
             <h1>SHAREBROADCAST</h1>
             <div class="user-profile">
-                <div class="user-avatar" id="avatarDisplay" style="display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--accent-neon);">U</div>
+                <div class="user-avatar" id="avatarDisplay" style="display: flex; align-items: center; justify-content: center; font-weight: bold; color: #00ffcc;">U</div>
                 <span id="userNameDisplay" style="font-size: 0.9rem; font-weight: 600;">Profile</span>
             </div>
         </header>
@@ -316,7 +340,7 @@
                 <div class="dashboard">
                     <h3 class="section-title">Live Studio</h3>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0;">
-                        Channel Routing Key: <strong id="networkKeyDisplay" style="color:var(--accent-neon);">Connecting...</strong>
+                        Channel Routing Key: <strong id="networkKeyDisplay" style="color:#00ffcc;">Connecting...</strong>
                     </p>
                     <input type="text" id="streamTitleInput" class="input-box" placeholder="Stream Title (Optional)">
                     <input type="text" id="streamDescInput" class="input-box" placeholder="Stream Description (Optional)">
@@ -326,216 +350,4 @@
 
                 <div class="dashboard">
                     <h3 class="section-title">Save & Publish Media Files</h3>
-                    <input type="text" id="uploadTitleInput" class="input-box" placeholder="Video Title (Optional)">
-                    <input type="text" id="uploadDescInput" class="input-box" placeholder="Video Description (Optional)">
-                    <label class="btn" style="background-color: #222; border: 1px solid var(--accent-pink); color: var(--accent-pink); margin-bottom:0;">
-                        Upload & Save to Feed List
-                        <input type="file" id="staticUpload" accept="video/*" style="display:none;">
-                    </label>
-                </div>
-            </main>
-
-            <aside>
-                <div class="dashboard" style="margin-top:0;">
-                    <h3 class="section-title">Your Saved Feed</h3>
-                    <div class="search-wrapper">
-                        <input type="text" id="feedSearchBox" class="input-box" style="margin-bottom:0;" placeholder="🔍 Search saved items...">
-                    </div>
-                    <div class="feed-scrollbox" id="feedDisplayGrid"></div>
-                </div>
-            </aside>
-        </div>
-    </div>
-
-    <script>
-        const deviceDisplayBar = document.getElementById('deviceDisplayBar');
-        const authOverlay = document.getElementById('authOverlay');
-        const mainAppWrapper = document.getElementById('mainAppWrapper');
-        const avatarDisplay = document.getElementById('avatarDisplay');
-        const userNameDisplay = document.getElementById('userNameDisplay');
-        const authUsernameInput = document.getElementById('authUsernameInput');
-        const secureGatewayBtn = document.getElementById('secureGatewayBtn');
-        
-        const broadcastPlayer = document.getElementById('broadcastPlayer');
-        const liveIndicatorTag = document.getElementById('liveIndicatorTag');
-        const networkKeyDisplay = document.getElementById('networkKeyDisplay');
-        const initiateStreamBtn = document.getElementById('initiateStreamBtn');
-        const terminateStreamBtn = document.getElementById('terminateStreamBtn');
-        const staticUpload = document.getElementById('staticUpload');
-        const feedSearchBox = document.getElementById('feedSearchBox');
-        const feedDisplayGrid = document.getElementById('feedDisplayGrid');
-
-        const streamTitleInput = document.getElementById('streamTitleInput');
-        const streamDescInput = document.getElementById('streamDescInput');
-        const uploadTitleInput = document.getElementById('uploadTitleInput');
-        const uploadDescInput = document.getElementById('uploadDescInput');
-
-        // Custom player control bindings
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const seekSlider = document.getElementById('seekSlider');
-        const timeDisplay = document.getElementById('timeDisplay');
-        const muteBtn = document.getElementById('muteBtn');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const customControlsBar = document.getElementById('customControlsBar');
-
-        let peerNode = null;
-        let hardwareStreamReference = null;
-        let platformFeed = [];
-
-        // --- Core Optimization: Custom Media Player JavaScript Controllers ---
-        
-        // 1. Play / Pause Toggle Control
-        playPauseBtn.addEventListener('click', togglePlayPause);
-        broadcastPlayer.addEventListener('click', togglePlayPause); // Click video screen directly to pause
-
-        function togglePlayPause() {
-            if (broadcastPlayer.paused || broadcastPlayer.ended) {
-                broadcastPlayer.play();
-                playPauseBtn.textContent = "⏸";
-            } else {
-                broadcastPlayer.pause();
-                playPauseBtn.textContent = "▶";
-            }
-        }
-
-        // 2. Track Video Time Progress Changes
-        broadcastPlayer.addEventListener('timeupdate', () => {
-            if (!isNaN(broadcastPlayer.duration)) {
-                // Update seek slider value position percentage
-                const progressPercentage = (broadcastPlayer.currentTime / broadcastPlayer.duration) * 100;
-                seekSlider.value = progressPercentage;
-
-                // Format timestamp strings dynamically
-                timeDisplay.textContent = `${formatTimestamp(broadcastPlayer.currentTime)} / ${formatTimestamp(broadcastPlayer.duration)}`;
-            }
-        });
-
-        function formatTimestamp(secondsValue) {
-            const minutes = Math.floor(secondsValue / 60);
-            const seconds = Math.floor(secondsValue % 60);
-            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        }
-
-        // 3. Manual Seek Range Dragging Operations
-        seekSlider.addEventListener('input', () => {
-            if (!isNaN(broadcastPlayer.duration)) {
-                const newTargetTime = (seekSlider.value / 100) * broadcastPlayer.duration;
-                broadcastPlayer.currentTime = newTargetTime;
-            }
-        });
-
-        // 4. Volume Slide Operations
-        volumeSlider.addEventListener('input', (e) => {
-            broadcastPlayer.volume = e.target.value;
-            if (broadcastPlayer.volume === 0) {
-                muteBtn.textContent = "🔇";
-            } else if (broadcastPlayer.volume < 0.5) {
-                muteBtn.textContent = "🔉";
-            } else {
-                muteBtn.textContent = "🔊";
-            }
-        });
-
-        // 5. Instant Mute Button Click
-        muteBtn.addEventListener('click', () => {
-            broadcastPlayer.muted = !broadcastPlayer.muted;
-            if (broadcastPlayer.muted) {
-                muteBtn.textContent = "🔇";
-                volumeSlider.value = 0;
-            } else {
-                muteBtn.textContent = "🔊";
-                volumeSlider.value = broadcastPlayer.volume;
-            }
-        });
-
-
-        // Device Sensing Engine
-        function runHardwareDeviceScan() {
-            const agentString = navigator.userAgent.toLowerCase();
-            const windowWidth = window.innerWidth;
-            let identifiedHardware = "PC / LAPTOP CONSOLE MODE";
-
-            if (/mobi|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(agentString)) {
-                identifiedHardware = "MOBILE PORTABLE PHONE MODE";
-            }
-            if (/ipad|tablet|(android(?!.*mobi))/i.test(agentString) || (windowWidth >= 768 && windowWidth <= 1024 && 'ontouchstart' in window)) {
-                identifiedHardware = "TABLET CONTROLLER PANEL MODE";
-            }
-            if (/windows nt/i.test(agentString) && /touch/i.test(agentString)) {
-                identifiedHardware = "TABLET PC HYBRID INTERFACE";
-            }
-            deviceDisplayBar.textContent = `OPTIMIZED FOR: ${identifiedHardware}`;
-        }
-
-        secureGatewayBtn.addEventListener('click', () => {
-            const enteredName = authUsernameInput.value.trim();
-            if (enteredName === "") {
-                alert("Please enter a username channel handle profile name.");
-                return;
-            }
-            userNameDisplay.textContent = enteredName;
-            avatarDisplay.textContent = enteredName.charAt(0).toUpperCase();
-            authOverlay.style.display = "none";
-            mainAppWrapper.style.display = "block";
-            initializeApplicationCore();
-        });
-
-        window.onload = runHardwareDeviceScan;
-        window.addEventListener('resize', runHardwareDeviceScan);
-
-        function initializeApplicationCore() {
-            peerNode = new Peer();
-            peerNode.on('open', (id) => {
-                networkKeyDisplay.textContent = id;
-                loadSavedFeedFromStorage();
-            });
-
-            peerNode.on('call', (incomingCall) => {
-                incomingCall.answer(hardwareStreamReference || null);
-                incomingCall.on('stream', (incomingFeed) => {
-                    broadcastPlayer.src = null;
-                    broadcastPlayer.srcObject = incomingFeed;
-                    liveIndicatorTag.style.display = "block";
-                    customControlsBar.style.display = "none"; // Hide custom control seek sliders during active real-time live events
-                });
-            });
-        }
-
-        function loadSavedFeedFromStorage() {
-            const preservedData = localStorage.getItem('sharebroadcast_saved_feed');
-            const fallbackDefault = [{
-                id: "default-welcome",
-                type: "video",
-                title: "Welcome Setup Guide",
-                description: "Upload videos below to save them straight onto your automated browser account feed list."
-            }];
-            platformFeed = preservedData ? JSON.parse(preservedData) : fallbackDefault;
-            renderDiscoveryFeed(platformFeed);
-        }
-
-        function commitFeedToPermanentStorage() {
-            localStorage.setItem('sharebroadcast_saved_feed', JSON.stringify(platformFeed));
-        }
-
-        function renderDiscoveryFeed(itemsToRender) {
-            feedDisplayGrid.innerHTML = "";
-            itemsToRender.forEach(item => {
-                const card = document.createElement('div');
-                card.className = `feed-card ${item.type === 'live' ? 'is-live' : ''}`;
-                card.innerHTML = `
-                    <h4>
-                        <span>${item.title}</span>
-                        <span class="type-pill" style="background-color: ${item.type === 'live' ? 'var(--accent-pink)' : '#444'}">${item.type.toUpperCase()}</span>
-                    </h4>
-                    <p>${item.description}</p>
-                `;
-                card.addEventListener('click', () => executeContentSwitch(item));
-                feedDisplayGrid.appendChild(card);
-            });
-        }
-
-        feedSearchBox.addEventListener('input', (e) => {
-            const searchString = e.target.value.toLowerCase().trim();
-            const filteredResults = platformFeed.filter(item => {
-                return item.title.toLowerCase().includes(searchString) || item.description.toLowerCase().includes(searchString);
-            });
+                    <input type="text" id="uploadTitleInput" class="input-box
