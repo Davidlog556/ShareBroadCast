@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareBroadCast - Single File Edition</title>
+    <title>ShareBroadCast - Instant Access Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         :root {
@@ -26,150 +25,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        /* Login Wall Panel Overlay */
-        #authOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .auth-card {
-            background-color: var(--bg-card);
-            padding: 40px;
-            border-radius: 16px;
-            border: 2px solid var(--accent-pink);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 0 25px rgba(255, 0, 85, 0.3);
-        }
-
-        /* Hide app workspace until user is logged in */
-        #mainAppWrapper {
-            display: none;
-        }
-
-        .site-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: #000000;
-            border-bottom: 2px solid var(--accent-pink);
-        }
-
-        .site-header h1 {
-            margin: 0;
-            font-size: 1.6rem;
-            color: var(--accent-pink);
-            letter-spacing: 1px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--accent-neon);
-        }
-
-        .app-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px;
-        }
-
-        .player-box {
-            background-color: #000000;
-            border: 2px solid var(--accent-pink);
-            border-radius: 12px;
-            overflow: hidden;
-            aspect-ratio: 16/9;
-            position: relative;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-
-        .live-tag {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: var(--accent-pink);
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            border-radius: 4px;
-            display: none;
-        }
-
-        .dashboard {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #2a2a2a;
-            margin-top: 15px;
-        }
-
-        .section-title {
-            margin-top: 0;
-            font-size: 1.1rem;
-            color: var(--accent-neon);
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-        }
-
-        .btn {
-        <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareBroadCast - Device Adaptive Network</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <style>
-        :root {
-            --bg-primary: #121212;
-            --bg-card: #1e1e1e;
-            --accent-neon: #00ffcc;
-            --accent-pink: #ff0055;
-            --text-main: #ffffff;
-            --text-muted: #b3b3b3;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-primary);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        /* Device Detection Status Bar Styling */
         .device-status-bar {
             background-color: #000000;
             color: var(--accent-neon);
@@ -181,7 +36,7 @@
             border-bottom: 1px solid #2a2a2a;
         }
 
-        /* Authentication Wall Overlay */
+        /* Login Gateway Overlay */
         #authOverlay {
             position: fixed;
             top: 0;
@@ -238,6 +93,7 @@
             height: 32px;
             border-radius: 50%;
             border: 1px solid var(--accent-neon);
+            background-color: #333;
         }
 
         .app-container {
@@ -309,6 +165,7 @@
             width: 100%;
             box-sizing: border-box;
             margin-bottom: 10px;
+            text-decoration: none;
         }
 
         .btn-stream { background-color: var(--accent-neon); color: #000; }
@@ -365,10 +222,10 @@
     <div id="authOverlay">
         <div class="auth-card">
             <h2 style="color: var(--accent-pink); margin-top: 0;">SHAREBROADCAST</h2>
-            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px;">Sign in with your Google Account to access active channels and your saved gallery list.</p>
-            <div style="display: flex; justify-content: center;">
-                <div id="googleBtnDiv"></div>
-            </div>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Connect your account profile to access active channels and saved media files.</p>
+            
+            <input type="text" id="authUsernameInput" class="input-box" placeholder="Enter Channel Username..." style="text-align: center;">
+            <button class="btn" id="secureGatewayBtn" style="width: 100%;">Instant Secure Connect</button>
         </div>
     </div>
 
@@ -376,7 +233,7 @@
         <header class="site-header">
             <h1>SHAREBROADCAST</h1>
             <div class="user-profile">
-                <img src="" id="userAvatarImg" class="user-avatar" alt="User Image">
+                <div class="user-avatar" id="avatarDisplay" style="display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--accent-neon);">U</div>
                 <span id="userNameDisplay" style="font-size: 0.9rem; font-weight: 600;">Profile</span>
             </div>
         </header>
@@ -389,7 +246,7 @@
                 </div>
 
                 <div class="dashboard">
-                    <h3 class="section-title">Live Studio Studio</h3>
+                    <h3 class="section-title">Live Studio</h3>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0;">
                         Channel Routing Key: <strong id="networkKeyDisplay" style="color:var(--accent-neon);">Connecting...</strong>
                     </p>
@@ -423,14 +280,13 @@
     </div>
 
     <script>
-        // PASTE YOUR GOOGLE CLOUD CLIENT ID CODE HERE BEFORE PUSHING TO GITHUB:
-        const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com";
-
         const deviceDisplayBar = document.getElementById('deviceDisplayBar');
         const authOverlay = document.getElementById('authOverlay');
         const mainAppWrapper = document.getElementById('mainAppWrapper');
-        const userAvatarImg = document.getElementById('userAvatarImg');
+        const avatarDisplay = document.getElementById('avatarDisplay');
         const userNameDisplay = document.getElementById('userNameDisplay');
+        const authUsernameInput = document.getElementById('authUsernameInput');
+        const secureGatewayBtn = document.getElementById('secureGatewayBtn');
         
         const broadcastPlayer = document.getElementById('broadcastPlayer');
         const liveIndicatorTag = document.getElementById('liveIndicatorTag');
@@ -450,13 +306,12 @@
         let hardwareStreamReference = null;
         let platformFeed = [];
 
-        // --- CORE NEW RUNTIME FEATURE: Automated Device Scanning System ---
+        // Automated Device Sensing Architecture
         function runHardwareDeviceScan() {
             const agentString = navigator.userAgent.toLowerCase();
             const windowWidth = window.innerWidth;
             let identifiedHardware = "PC / LAPTOP CONSOLE MODE";
 
-            // Scanning engine criteria matches
             if (/mobi|android|iphone|ipod|blackberry|iemobile|opera mini/i.test(agentString)) {
                 identifiedHardware = "MOBILE PORTABLE PHONE MODE";
             }
@@ -466,43 +321,29 @@
             if (/windows nt/i.test(agentString) && /touch/i.test(agentString)) {
                 identifiedHardware = "TABLET PC HYBRID INTERFACE";
             }
-
-            // Output strings cleanly straight onto our top accent status banner bar element
             deviceDisplayBar.textContent = `OPTIMIZED FOR: ${identifiedHardware}`;
         }
 
-        window.onload = function () {
-            runHardwareDeviceScan(); // Launch device filter immediately upon page load
+        // Handle secure verification bypass logic routine
+        secureGatewayBtn.addEventListener('click', () => {
+            const enteredName = authUsernameInput.value.trim();
+            if (enteredName === "") {
+                alert("Please enter a username channel handle profile name.");
+                return;
+            }
 
-            google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: handleCredentialResponse
-            });
-            google.accounts.id.renderButton(
-                document.getElementById("googleBtnDiv"),
-                { theme: "dark", size: "large", width: "240" }
-            );
-        };
-
-        // Window resize monitoring step tracking dynamic hybrid switches
-        window.addEventListener('resize', runHardwareDeviceScan);
-
-        function handleCredentialResponse(response) {
-            const base64Url = response.credential.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-
-            const userData = JSON.parse(jsonPayload);
-            userNameDisplay.textContent = userData.name;
-            userAvatarImg.src = userData.picture;
+            // Generate profile display attributes dynamically
+            userNameDisplay.textContent = enteredName;
+            avatarDisplay.textContent = enteredName.charAt(0).toUpperCase();
 
             authOverlay.style.display = "none";
             mainAppWrapper.style.display = "block";
 
             initializeApplicationCore();
-        }
+        });
+
+        window.onload = runHardwareDeviceScan;
+        window.addEventListener('resize', runHardwareDeviceScan);
 
         function initializeApplicationCore() {
             peerNode = new Peer();
@@ -529,7 +370,6 @@
                 title: "Welcome Setup Guide",
                 description: "Upload videos below to save them straight onto your automated browser account feed list."
             }];
-
             platformFeed = preservedData ? JSON.parse(preservedData) : fallbackDefault;
             renderDiscoveryFeed(platformFeed);
         }
